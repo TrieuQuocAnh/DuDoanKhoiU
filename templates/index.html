@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dự đoán khối u vú</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #1565c0;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .input-group {
+      margin: 15px 0;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #34495e;
+      font-size: 14px;
+    }
+
+    input {
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      transition: border 0.3s;
+    }
+
+    input:focus {
+      border-color: #1565c0;
+      outline: none;
+      box-shadow: 0 0 5px rgba(21, 101, 192, 0.4);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      background: #1565c0;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: #0d47a1;
+      transform: translateY(-2px);
+    }
+
+    .result {
+      margin-top: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .result.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #81c784;
+    }
+
+    .result.error {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🩺 Dự đoán khối u vú</h1>
+    <form id="duDoanForm">
+      {% for ten in dac_trung %}
+        <div class="input-group">
+          <label for="{{ ten }}">{{ ten }}</label>
+          <input type="number" step="any" name="{{ ten }}" id="{{ ten }}" required>
+        </div>
+      {% endfor %}
+      <button type="submit">Dự đoán</button>
+    </form>
+
+    <div id="ketQua" class="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("duDoanForm");
+    const ketQuaDiv = document.getElementById("ketQua");
+
+    form.addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      let data = {};
+      formData.forEach((value, key) => { data[key] = value; });
+
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.error) {
+          ketQuaDiv.innerHTML = "⚠️ " + result.error;
+          ketQuaDiv.className = "result error";
+        } else {
+          ketQuaDiv.innerHTML = result.result;
+          if (result.result.includes("LÀNH TÍNH")) {
+            ketQuaDiv.className = "result success";
+          } else {
+            ketQuaDiv.className = "result error";
+          }
+        }
+
+        // giữ nguyên dữ liệu trong form (không reset)
+      } catch (err) {
+        ketQuaDiv.innerHTML = "⚠️ Lỗi kết nối server!";
+        ketQuaDiv.className = "result error";
+      }
+    });
+  </script>
+</body>
+</html>
