@@ -45,3 +45,9 @@ area_worst (diện tích lớn nhất)
 concavity_mean (trung bình độ lõm)
 
 radius_worst (bán kính lớn nhất)
+
+<img width="644" height="853" alt="image" src="https://github.com/user-attachments/assets/5573c30f-4a99-45e0-b3c6-7ed0bed7b6ca" />
+
+<img width="606" height="819" alt="image" src="https://github.com/user-attachments/assets/495073cc-cef5-4220-8058-a77796835ea2" />
+
+
